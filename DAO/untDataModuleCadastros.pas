@@ -1,7 +1,7 @@
 unit untDataModuleCadastros;
 
 interface
-
+{$REGION 'Uses'}
 uses
   System.SysUtils, System.Classes, Data.DB, Datasnap.DBClient,
   Datasnap.Provider, Data.Win.ADODB, Data.FMTBcd, Data.SqlExpr, FireDAC.Stan.Intf,
@@ -10,9 +10,11 @@ uses
   FireDAC.Phys.MSSQL, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.VCLUI.Wait,
   FireDAC.Comp.UI, Cliente.Model, Cliente.Endereco.Model, Cliente.EnderecoIntegracao.Model;
+{$ENDREGION}
 
 type
   TDataModuleCadastros = class(TDataModule)
+{$REGION 'Components'}
     TbClientes: TFDQuery;
     FDGUIxWaitCursor: TFDGUIxWaitCursor;
     sqlInserir: TFDQuery;
@@ -21,46 +23,39 @@ type
     TbEnderecos: TFDQuery;
     sqlRelatorio: TFDQuery;
     TbEnderecoIntegracao: TFDQuery;
-    TbEnderecoIntegracaoidendereco: TIntegerField;
-    TbEnderecoIntegracaodsuf: TStringField;
-    TbEnderecoIntegracaonmcidade: TStringField;
-    TbEnderecoIntegracaonmbairro: TStringField;
-    TbEnderecoIntegracaonmlogradouro: TStringField;
-    TbEnderecoIntegracaodscomplemento: TStringField;
-    TbClientesidPessoa: TFDAutoIncField;
-    TbClientesflnatureza: TIntegerField;
-    TbClientesdsdocumento: TStringField;
-    TbClientesnmprimeiro: TStringField;
-    TbClientesnmsegundo: TStringField;
-    TbClientesdtregistro: TSQLTimeStampField;
-    TbEnderecosidPessoa: TFDAutoIncField;
-    TbEnderecosflnatureza: TIntegerField;
-    TbEnderecosdsdocumento: TStringField;
-    TbEnderecosnmprimeiro: TStringField;
-    TbEnderecosnmsegundo: TStringField;
-    TbEnderecosdtregistro: TSQLTimeStampField;
-    TbEnderecosidendereco: TFDAutoIncField;
-    TbEnderecosdscep: TStringField;
-    TbEnderecosnmlogradouro: TStringField;
-    TbEnderecosdscomplemento: TStringField;
-    TbEnderecosnmbairro: TStringField;
-    TbEnderecosnmcidade: TStringField;
-    TbEnderecosdsuf: TStringField;
     QryTmp: TFDQuery;
     MemCache: TFDMemTable;
     DsCache: TDataSource;
     FDSchemaAdapter1: TFDSchemaAdapter;
+    TbClientesidpessoa: TLargeintField;
+    TbClientesflnatureza: TSmallintField;
+    TbClientesdsdocumento: TWideStringField;
+    TbClientesnmprimeiro: TWideStringField;
+    TbClientesnmsegundo: TWideStringField;
+    TbClientesdtregistro: TDateField;
+    TbEnderecosidpessoa: TLargeintField;
+    TbEnderecosflnatureza: TSmallintField;
+    TbEnderecosdsdocumento: TWideStringField;
+    TbEnderecosnmprimeiro: TWideStringField;
+    TbEnderecosnmsegundo: TWideStringField;
+    TbEnderecosdtregistro: TDateField;
+    TbEnderecosidendereco: TLargeintField;
+    TbEnderecosdscep: TWideStringField;
+    TbEnderecosnmlogradouro: TWideStringField;
+    TbEnderecosdscomplemento: TWideStringField;
+    TbEnderecosnmbairro: TWideStringField;
+    TbEnderecosnmcidade: TWideStringField;
+    TbEnderecosdsuf: TWideStringField;
+{$ENDREGION}
   private
-    { Private declarations }
 
   public
-    { Public declarations }
     procedure PesquisarClientes(sNome, campoIndice : String);
     procedure PesquisarEnderecos(iCodCli : Integer);
     procedure CarregarClientes(Cliente : TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodigo : Integer);
     procedure CarregarEnderecoClientes(Endereco : TClienteEndereco; iCodEnd : Integer);
     procedure CarregarEnderecoIntegracao(EnderecoIntegracao : TClienteEnderecoIntegracao; iCodEnd : Integer);
-    function InserirClientes(Cliente : TCliente; Endereco : TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; out sErro : String): Boolean;
+    function InserirClientes(Cliente : TCliente; Endereco : TClienteEndereco; CdsEnderecos: TClientDataSet; out sErro : String): Boolean;
     function AlterarClientes(Cliente : TCliente; out sErro : String): Boolean;
     function ExcluirClientes(iCodigo : Integer; out sErro : String): Boolean;
     function InserirEnderecos(Endereco : TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodEnd : Integer; out sErro : String): Boolean;
@@ -78,8 +73,6 @@ implementation
 
 uses untDataModuleConexao;
 
-{ TDataModuleCadastros }
-
 procedure TDataModuleCadastros.PesquisarClientes(sNome, campoIndice: String);
 begin
   with TbClientes do
@@ -91,7 +84,6 @@ begin
     Prepared := True;
     Open();
   end;
-
 end;
 
 procedure TDataModuleCadastros.PesquisarEnderecos(iCodCli: Integer);
@@ -133,7 +125,7 @@ begin
     begin
       Connection := DataModuleConexao.FDConnection;
       SQL.Clear;
-      SQL.Add('SELECT  PES.IDPESSOA');
+      SQL.Add('SELECT PES.IDPESSOA');
       SQL.Add(',PES.FLNATUREZA');
       SQL.Add(',PES.DSDOCUMENTO');
       SQL.Add(',PES.NMPRIMEIRO');
@@ -217,8 +209,8 @@ begin
   end;
 end;
 
-function TDataModuleCadastros.InserirClientes(Cliente: TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; out sErro: String): Boolean;
-var codCliente, codEndereco : Integer;
+function TDataModuleCadastros.InserirClientes(Cliente: TCliente; Endereco: TClienteEndereco; CdsEnderecos: TClientDataSet; out sErro: String): Boolean;
+var codCliente, codEndereco, quantEnd : Integer;
     QryTmp, QryEnd, QryInt : TFDQuery;
 begin
   QryTmp := TFDQuery.Create((nil));
@@ -227,6 +219,7 @@ begin
   QryTmp.Connection := DataModuleConexao.FDConnection;
   QryEnd.Connection := DataModuleConexao.FDConnection;
   QryInt.Connection := DataModuleConexao.FDConnection;
+  quantEnd := 1;
 
   with sqlInserir, Cliente do
   begin
@@ -241,74 +234,89 @@ begin
     ParamByName('NmSegundo').AsString := NmSegundo;
     ParamByName('DtRegistro').AsDateTime := DtRegistro;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL;
+
+      QryTmp.Close;
+      QryTmp.SQL.Clear;
+      QryTmp.SQL.Add('SELECT MAX(idpessoa) as UltIdPessoa FROM Pessoa ' );
+      QryTmp.Open;
+      codCliente := QryTmp.FieldByName('UltIdPessoa').AsInteger;
+
+      CdsEnderecos.First;
+      while not CdsEnderecos.Eof do
+      begin
+        with QryEnd do
+        begin
+          Close;
+          SQL.Clear;
+          SQL.Add('INSERT INTO Endereco (IdPessoa, DsCEP) VALUES (:Id, :DsCep) ');
+          ParamByName('Id').asInteger := codCliente;
+          ParamByName('DsCep').AsString := CdsEnderecos.FieldByName('DSCEP').AsString;;
+          try
+            Prepared := True;
+            ExecSQL;
+          except on E: Exception do
+            begin
+              sErro := 'Ocorreu um erro ao inserir um endereço do cliente !' + sLineBreak + E.Message;
+              result := False;
+              //DataModuleConexao.FDConnection.Rollback;
+              raise;
+            end;
+          end;
+        end;
+
+        if quantEnd <= 1 then
+        begin
+          QryTmp.Close;
+          QryTmp.SQL.Clear;
+          QryTmp.SQL.Add('SELECT IdEndereco FROM Endereco ' );
+          QryTmp.SQL.Add('WHERE IdPessoa = :idPessoa ' );
+          QryTmp.ParamByName('IdPessoa').AsInteger := codcliente;
+          QryTmp.Open;
+          codEndereco := QryTmp.FieldByName('IdEndereco').AsInteger;
+        end;
+
+        with QryInt do
+        begin
+          Close;
+          SQL.Clear;
+          SQL.Add('INSERT INTO endereco_integracao (IdEndereco, DsUf, NmCidade, NmBairro, NmLogradouro, DsComplemento )');
+          SQL.Add('VALUES (:IdEndereco, :DsUf, :NmCidade, :NmBairro, :NmLogradouro, :DsComplemento )');
+          ParamByName('IdEndereco').asInteger := codEndereco;
+          ParamByName('DsUf').AsString := CdsEnderecos.FieldByName('DSUF').AsString;
+          ParamByName('NmCidade').AsString := CdsEnderecos.FieldByName('NmCidade').AsString;
+          ParamByName('NmBairro').AsString := CdsEnderecos.FieldByName('NmBairro').AsString;
+          ParamByName('NmLOgradouro').AsString := CdsEnderecos.FieldByName('NmLogradouro').AsString;
+          ParamByName('DsComplemento').AsString := CdsEnderecos.FieldByName('DsComplemento').AsString;
+          try
+            Prepared := True;
+            ExecSQL;
+          except on E: Exception do
+            begin
+              sErro := 'Ocorreu um erro ao inserir o endereço integrado do cliente !' + sLineBreak + E.Message;
+              result := False;
+              DataModuleConexao.FDConnection.Rollback;
+              raise;
+            end;
+          end;
+        end;
+        CdsEnderecos.Next;
+        codEndereco := codEndereco + 1;
+        quantEnd := quantEnd + 1;
+      end;
       Result := True;
+      DataModuleConexao.FDConnection.Commit;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao inserir um novo cliente !' + sLineBreak + E.Message;
         result := False;
-      end;
-    end;
-
-    QryTmp.Close;
-    QryTmp.SQL.Clear;
-    QryTmp.SQL.Add('SELECT MAX(idpessoa) as UltIdPessoa FROM Pessoa ' );
-    QryTmp.Open;
-    codCliente := QryTmp.FieldByName('UltIdPessoa').AsInteger;
-
-    with QryEnd do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Add('INSERT INTO Endereco (IdPessoa, DsCEP) VALUES (:Id, :DsCep) ');
-      ParamByName('Id').asInteger := codCliente;
-      ParamByName('DsCep').AsString := Endereco.DsCep;
-      try
-        Prepared := True;
-        ExecSQL;
-        Result := True;
-      except on E: Exception do
-        begin
-          sErro := 'Ocorreu um erro ao inserir um endereço do cliente !' + sLineBreak + E.Message;
-          result := False;
-        end;
-      end;
-    end;
-
-
-    //QryEnd.ExecSQL;
-
-    QryTmp.Close;
-    QryTmp.SQL.Clear;
-    QryTmp.SQL.Add('SELECT IdEndereco FROM Endereco ' );
-    QryTmp.SQL.Add('WHERE IdPessoa = :idPessoa ' );
-    QryTmp.ParamByName('IdPessoa').AsInteger := codcliente;
-    QryTmp.Open;
-    codEndereco := QryTmp.FieldByName('IdEndereco').AsInteger;
-
-    with QryInt do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Add('INSERT INTO endereco_integracao (IdEndereco, DsUf, NmCidade, NmBairro, NmLogradouro, DsComplemento )');
-      SQL.Add('VALUES (:IdEndereco, :DsUf, :NmCidade, :NmBairro, :NmLogradouro, :DsComplemento )');
-      ParamByName('IdEndereco').asInteger := codEndereco;
-      ParamByName('DsUf').AsString := EnderecoIntegracao.DsUf;
-      ParamByName('NmCidade').AsString := EnderecoIntegracao.NmCidade;
-      ParamByName('NmBairro').AsString := EnderecoIntegracao.NmBairro;
-      ParamByName('NmLOgradouro').AsString := EnderecoIntegracao.NmLogradouro;
-      ParamByName('DsComplemento').AsString := EnderecoIntegracao.DsComplemento;
-      try
-        Prepared := True;
-        ExecSQL;
-        Result := True;
-      except on E: Exception do
-        begin
-          sErro := 'Ocorreu um erro ao inserir o endereço integrado do cliente !' + sLineBreak + E.Message;
-          result := False;
-        end;
+        DataModuleConexao.FDConnection.Rollback;
+        raise;
       end;
     end;
   end;
@@ -334,45 +342,52 @@ begin
     ParamByName('Id').asInteger := iCodEnd;
     ParamByName('DsCep').AsString := DsCep;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL;
+
+      QryTmp.Close;
+      QryTmp.SQL.Clear;
+      QryTmp.SQL.Add('SELECT MAX(idendereco) as UltIdEndereco FROM endereco where idpessoa = :idPessoa ' );
+      QryTmp.ParamByName('IdPessoa').AsInteger := iCodEnd;
+      QryTmp.Open;
+      codEndereco := QryTmp.FieldByName('UltIdEndereco').AsInteger;
+
+      with QryInt do
+      begin
+        Close;
+        SQL.Clear;
+        SQL.Add('INSERT INTO endereco_integracao (IdEndereco, DsUf, NmCidade, NmBairro, NmLogradouro, DsComplemento )');
+        SQL.Add('VALUES (:IdEndereco, :DsUf, :NmCidade, :NmBairro, :NmLogradouro, :DsComplemento )');
+        ParamByName('IdEndereco').asInteger := codEndereco;
+        ParamByName('DsUf').AsString := EnderecoIntegracao.DsUf;
+        ParamByName('NmCidade').AsString := EnderecoIntegracao.NmCidade;
+        ParamByName('NmBairro').AsString := EnderecoIntegracao.NmBairro;
+        ParamByName('NmLOgradouro').AsString := EnderecoIntegracao.NmLogradouro;
+        ParamByName('DsComplemento').AsString := EnderecoIntegracao.DsComplemento;
+        try
+          Prepared := True;
+          ExecSQL;
+        except on E: Exception do
+          begin
+            sErro := 'Ocorreu um erro ao inserir o endereço integrado do cliente !' + sLineBreak + E.Message;
+            DataModuleConexao.FDConnection.Rollback;
+            result := False;
+            raise;
+          end;
+        end;
+      end;
+      DataModuleConexao.FDConnection.Commit;
       Result := True;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao inserir um novo endereco do cliente !' + sLineBreak + E.Message;
+        DataModuleConexao.FDConnection.Rollback;
         Result := False;
-      end;
-    end;
-
-    QryTmp.Close;
-    QryTmp.SQL.Clear;
-    QryTmp.SQL.Add('SELECT MAX(idendereco) as UltIdEndereco FROM endereco where idpessoa = :idPessoa ' );
-    QryTmp.ParamByName('IdPessoa').AsInteger := iCodEnd;
-    QryTmp.Open;
-    codEndereco := QryTmp.FieldByName('UltIdEndereco').AsInteger;
-
-    with QryInt do
-    begin
-      Close;
-      SQL.Clear;
-      SQL.Add('INSERT INTO endereco_integracao (IdEndereco, DsUf, NmCidade, NmBairro, NmLogradouro, DsComplemento )');
-      SQL.Add('VALUES (:IdEndereco, :DsUf, :NmCidade, :NmBairro, :NmLogradouro, :DsComplemento )');
-      ParamByName('IdEndereco').asInteger := codEndereco;
-      ParamByName('DsUf').AsString := EnderecoIntegracao.DsUf;
-      ParamByName('NmCidade').AsString := EnderecoIntegracao.NmCidade;
-      ParamByName('NmBairro').AsString := EnderecoIntegracao.NmBairro;
-      ParamByName('NmLOgradouro').AsString := EnderecoIntegracao.NmLogradouro;
-      ParamByName('DsComplemento').AsString := EnderecoIntegracao.DsComplemento;
-      try
-        Prepared := True;
-        ExecSQL;
-        Result := True;
-      except on E: Exception do
-        begin
-          sErro := 'Ocorreu um erro ao inserir o endereço integrado do cliente !' + sLineBreak + E.Message;
-          result := False;
-        end;
+        raise;
       end;
     end;
   end;
@@ -399,16 +414,22 @@ begin
     ParamByName('DtRegistro').AsDate := DtRegistro;
     ParamByName('Id').AsInteger := IdPessoa;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL();
-      Result := True;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao alterar os dados do cliente !' + sLineBreak + E.Message;
+        DataModuleConexao.FDConnection.Rollback;
         Result := False;
+        raise;
       end;
     end;
+    DataModuleConexao.FDConnection.Commit;
+    Result := True;
   end;
 end;
 
@@ -423,14 +444,20 @@ begin
     ParamByName('DsCep').AsString := DsCep;
     ParamByName('Id').AsInteger := IdEndereco;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL();
       Result := True;
+      DataModuleConexao.FDConnection.Commit;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao alterar o endereco deste cliente !' + sLineBreak + E.Message;
         Result := False;
+        DataModuleConexao.FDConnection.Rollback;
+        raise;
       end;
     end;
   end;
@@ -455,18 +482,23 @@ begin
     ParamByName('DsComplemento').AsString := DsComplemento;
     ParamByName('Id').AsInteger := iCodEnd;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL();
       Result := True;
+      DataModuleConexao.FDConnection.Commit;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao alterar o endereco deste cliente !' + sLineBreak + E.Message;
         Result := False;
+        DataModuleConexao.FDConnection.Rollback;
+        raise;
       end;
     end;
   end;
-
 end;
 
 function TDataModuleCadastros.ExcluirClientes(iCodigo: Integer;  out sErro: String): Boolean;
@@ -478,14 +510,20 @@ begin
     SQL.Text := 'delete from Pessoa where IdPessoa = :Id';
     ParamByName('Id').AsInteger := iCodigo;
 
+    // Inicia Transação
+    DataModuleConexao.FDConnection.StartTransaction;
+
     try
       Prepared := True;
       ExecSQL();
       Result := True;
+      DataModuleConexao.FDConnection.Commit;
     except on E: Exception do
       begin
         sErro := 'Ocorreu um erro ao excluir o cliente !' + sLineBreak + E.Message;
         Result := False;
+        DataModuleConexao.FDConnection.Rollback;
+        raise;
       end;
     end;
   end;
@@ -502,14 +540,20 @@ begin
       SQL.Add('delete from Endereco where IdCliente = :Id');
       ParamByName('Id').AsInteger := iCodigo;
 
+      // Inicia Transação
+      DataModuleConexao.FDConnection.StartTransaction;
+
       try
         Prepared := True;
         ExecSQL();
-        Result := True
+        Result := True;
+        DataModuleConexao.FDConnection.Commit;
       except on E: Exception do
         begin
           sErro := 'Ocorreu um erro ao excluir o(s) endereço(s) do cliente !' + sLineBreak + E.Message;
           Result := False;
+          DataModuleConexao.FDConnection.Rollback;
+          raise;
         end;
       end;
     end
@@ -518,36 +562,37 @@ begin
       SQL.Add('delete from Endereco_Integracao  where IdEndereco = :Id');
       ParamByName('Id').AsInteger := iCodEnd;
 
-      try
-      Prepared := True;
-      ExecSQL();
-      Result := True
-
-      except on E: Exception do
-        begin
-          sErro := 'Ocorreu um erro ao excluir o endereço integração do cliente !' + sLineBreak + E.Message;
-          Result := False;
-          exit
-        end;
-      end;
-
-      Sql.Clear;
-      SQL.Add('delete from Endereco where IdEndereco = :Id');
-      ParamByName('Id').AsInteger := iCodEnd;
+      // Inicia Transação
+      DataModuleConexao.FDConnection.StartTransaction;
 
       try
         Prepared := True;
         ExecSQL();
-        Result := True
+        Sql.Clear;
+        SQL.Add('delete from Endereco where IdEndereco = :Id');
+        ParamByName('Id').AsInteger := iCodEnd;
+
+        try
+          Prepared := True;
+          ExecSQL();
+        except on E: Exception do
+          begin
+            sErro := 'Ocorreu um erro ao excluir o endereço do cliente !' + sLineBreak + E.Message;
+            Result := False;
+          end;
+        end;
+        Result := True;
+        DataModuleConexao.FDConnection.Commit;
       except on E: Exception do
         begin
-          sErro := 'Ocorreu um erro ao excluir o endereço do cliente !' + sLineBreak + E.Message;
+          sErro := 'Ocorreu um erro ao excluir o endereço integração do cliente !' + sLineBreak + E.Message;
           Result := False;
+          DataModuleConexao.FDConnection.Rollback;
+          raise;
         end;
       end;
     end;
   end;
 end;
-
 
 end.

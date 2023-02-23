@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.UITypes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, untManutencaoPadrao, Data.DB, Vcl.DBCtrls,
-  Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls;
+  Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls, DbxCommon, Data.SqlExpr;
 
 type
   TOpcao = (opcNovo, opcAlterar, opcNavegar);

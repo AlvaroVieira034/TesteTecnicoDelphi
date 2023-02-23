@@ -10,32 +10,30 @@ object DataModuleCadastros: TDataModuleCadastros
       '')
     Left = 64
     Top = 24
-    object TbClientesidPessoa: TFDAutoIncField
-      FieldName = 'idPessoa'
-      Origin = 'idPessoa'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
+    object TbClientesidpessoa: TLargeintField
+      FieldName = 'idpessoa'
+      Origin = 'idpessoa'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object TbClientesflnatureza: TIntegerField
+    object TbClientesflnatureza: TSmallintField
       FieldName = 'flnatureza'
       Origin = 'flnatureza'
-      Required = True
     end
-    object TbClientesdsdocumento: TStringField
+    object TbClientesdsdocumento: TWideStringField
       FieldName = 'dsdocumento'
       Origin = 'dsdocumento'
     end
-    object TbClientesnmprimeiro: TStringField
+    object TbClientesnmprimeiro: TWideStringField
       FieldName = 'nmprimeiro'
       Origin = 'nmprimeiro'
       Size = 100
     end
-    object TbClientesnmsegundo: TStringField
+    object TbClientesnmsegundo: TWideStringField
       FieldName = 'nmsegundo'
       Origin = 'nmsegundo'
       Size = 100
     end
-    object TbClientesdtregistro: TSQLTimeStampField
+    object TbClientesdtregistro: TDateField
       FieldName = 'dtregistro'
       Origin = 'dtregistro'
     end
@@ -157,67 +155,70 @@ object DataModuleCadastros: TDataModuleCadastros
       '')
     Left = 64
     Top = 88
-    object TbEnderecosidPessoa: TFDAutoIncField
-      FieldName = 'idPessoa'
-      Origin = 'idPessoa'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
+    object TbEnderecosidpessoa: TLargeintField
+      FieldName = 'idpessoa'
+      Origin = 'idpessoa'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
     end
-    object TbEnderecosflnatureza: TIntegerField
+    object TbEnderecosflnatureza: TSmallintField
       FieldName = 'flnatureza'
       Origin = 'flnatureza'
-      Required = True
     end
-    object TbEnderecosdsdocumento: TStringField
+    object TbEnderecosdsdocumento: TWideStringField
       FieldName = 'dsdocumento'
       Origin = 'dsdocumento'
     end
-    object TbEnderecosnmprimeiro: TStringField
+    object TbEnderecosnmprimeiro: TWideStringField
       FieldName = 'nmprimeiro'
       Origin = 'nmprimeiro'
       Size = 100
     end
-    object TbEnderecosnmsegundo: TStringField
+    object TbEnderecosnmsegundo: TWideStringField
       FieldName = 'nmsegundo'
       Origin = 'nmsegundo'
       Size = 100
     end
-    object TbEnderecosdtregistro: TSQLTimeStampField
+    object TbEnderecosdtregistro: TDateField
       FieldName = 'dtregistro'
       Origin = 'dtregistro'
     end
-    object TbEnderecosidendereco: TFDAutoIncField
+    object TbEnderecosidendereco: TLargeintField
+      AutoGenerateValue = arDefault
       FieldName = 'idendereco'
       Origin = 'idendereco'
-      ReadOnly = True
     end
-    object TbEnderecosdscep: TStringField
+    object TbEnderecosdscep: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'dscep'
       Origin = 'dscep'
-      Required = True
       Size = 15
     end
-    object TbEnderecosnmlogradouro: TStringField
+    object TbEnderecosnmlogradouro: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'nmlogradouro'
       Origin = 'nmlogradouro'
       Size = 100
     end
-    object TbEnderecosdscomplemento: TStringField
+    object TbEnderecosdscomplemento: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'dscomplemento'
       Origin = 'dscomplemento'
       Size = 100
     end
-    object TbEnderecosnmbairro: TStringField
+    object TbEnderecosnmbairro: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'nmbairro'
       Origin = 'nmbairro'
       Size = 50
     end
-    object TbEnderecosnmcidade: TStringField
+    object TbEnderecosnmcidade: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'nmcidade'
       Origin = 'nmcidade'
       Size = 100
     end
-    object TbEnderecosdsuf: TStringField
+    object TbEnderecosdsuf: TWideStringField
+      AutoGenerateValue = arDefault
       FieldName = 'dsuf'
       Origin = 'dsuf'
       Size = 50
@@ -245,37 +246,6 @@ object DataModuleCadastros: TDataModuleCadastros
         Name = 'IDENDERECO'
         ParamType = ptInput
       end>
-    object TbEnderecoIntegracaoidendereco: TIntegerField
-      FieldName = 'idendereco'
-      Origin = 'idendereco'
-      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
-      Required = True
-    end
-    object TbEnderecoIntegracaodsuf: TStringField
-      FieldName = 'dsuf'
-      Origin = 'dsuf'
-      Size = 50
-    end
-    object TbEnderecoIntegracaonmcidade: TStringField
-      FieldName = 'nmcidade'
-      Origin = 'nmcidade'
-      Size = 100
-    end
-    object TbEnderecoIntegracaonmbairro: TStringField
-      FieldName = 'nmbairro'
-      Origin = 'nmbairro'
-      Size = 50
-    end
-    object TbEnderecoIntegracaonmlogradouro: TStringField
-      FieldName = 'nmlogradouro'
-      Origin = 'nmlogradouro'
-      Size = 100
-    end
-    object TbEnderecoIntegracaodscomplemento: TStringField
-      FieldName = 'dscomplemento'
-      Origin = 'dscomplemento'
-      Size = 100
-    end
   end
   object QryTmp: TFDQuery
     Connection = DataModuleConexao.FDConnection

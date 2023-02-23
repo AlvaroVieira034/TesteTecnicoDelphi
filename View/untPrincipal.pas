@@ -363,14 +363,14 @@ begin
       if MessageDlg('Existem endereço(s) associado a esse cliente, deseja excluir cliente e todos endereços asssociados ?', mtConfirmation, [mbYes, mbNo], 0) = IDYES then
       begin
         excluirTodos := True;
-        if ClienteController.ExcluirClientes(DataSourcePesquisa.DataSet.FieldByName('IdCliente').AsInteger, sErro) = False then
+        if ClienteController.ExcluirClientes(DataSourcePesquisa.DataSet.FieldByName('IdPessoa').AsInteger, sErro) = False then
           raise Exception.Create(sErro);
       end;
     end
     else
     begin
       if MessageDlg('Deseja realmente excluir o Cliente selecionado ?',mtConfirmation, [mbYes, mbNo],0) = IDYES then
-        if ClienteController.ExcluirClientes(DataSourcePesquisa.DataSet.FieldByName('IdCliente').AsInteger, sErro) = False then
+        if ClienteController.ExcluirClientes(DataSourcePesquisa.DataSet.FieldByName('IdPessoa').AsInteger, sErro) = False then
           raise Exception.Create(sErro);
     end;
   finally

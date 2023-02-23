@@ -6,11 +6,16 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   System.UITypes, Vcl.Graphics,  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, untManutencaoPadrao,
   Data.DB, Vcl.DBCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Mask,
-  Vcl.Grids, Vcl.DBGrids;
+  Vcl.Grids, Vcl.DBGrids, untDataModuleConexao, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Datasnap.DBClient, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  Datasnap.Provider;
 
 type
   TOperacao = (opNovo, opAlterar, opNavegar);
   TFormManutencaoClientes = class(TFormManutencaoPadrao)
+{$REGION 'Components'}
     GroupBoxClientes: TGroupBox;
     Label1: TLabel;
     LabelDocumento: TLabel;
@@ -27,9 +32,9 @@ type
     GroupBoxEnderecos: TGroupBox;
     Label2: TLabel;
     EditCep: TEdit;
-    SpeedButtonAdiciona: TSpeedButton;
+    SpeedButtonIncluirEnd: TSpeedButton;
     SpeedButtonPesquisaCep: TSpeedButton;
-    DBGrid1: TDBGrid;
+    DbGridEnderecos: TDBGrid;
     Bevel1: TBevel;
     Label6: TLabel;
     EditEndereco: TEdit;
@@ -41,6 +46,27 @@ type
     EditCidade: TEdit;
     Label10: TLabel;
     EditEstado: TEdit;
+    QryEnderecos: TFDQuery;
+    CdsEnderecos: TClientDataSet;
+    DataSourceEnderecos: TDataSource;
+    QryEnderecosidendereco: TLargeintField;
+    QryEnderecosnmlogradouro: TWideStringField;
+    QryEnderecosdscomplemento: TWideStringField;
+    QryEnderecosnmbairro: TWideStringField;
+    QryEnderecosdscep: TWideStringField;
+    QryEnderecosnmcidade: TWideStringField;
+    QryEnderecosdsuf: TWideStringField;
+    CdsEnderecosnmlogradouro: TWideStringField;
+    CdsEnderecosdscomplemento: TWideStringField;
+    CdsEnderecosnmbairro: TWideStringField;
+    CdsEnderecosdscep: TWideStringField;
+    CdsEnderecosnmcidade: TWideStringField;
+    CdsEnderecosdsuf: TWideStringField;
+    QryEnderecosidpessoa: TIntegerField;
+    CdsEnderecosidpessoa: TIntegerField;
+    DSProvider: TDataSetProvider;
+    SpeedButtonExcluirEnd: TSpeedButton;
+{$ENDREGION}
     procedure FormShow(Sender: TObject);
     procedure SpeedButtonGravarClick(Sender: TObject);
     procedure EditDataRegistroKeyPress(Sender: TObject; var Key: Char);
@@ -48,21 +74,36 @@ type
     procedure SpeedButtonPesquisaCepClick(Sender: TObject);
     procedure ComboBoxTipoPessoaChange(Sender: TObject);
     procedure SpeedButtonCancelarClick(Sender: TObject);
+    procedure SpeedButtonIncluirEndClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure EditCepExit(Sender: TObject);
+    procedure EditEnderecoExit(Sender: TObject);
+    procedure EditComplementoExit(Sender: TObject);
+    procedure EditBairroExit(Sender: TObject);
+    procedure EditCidadeExit(Sender: TObject);
+    procedure EditEstadoExit(Sender: TObject);
+    procedure EditCepKeyPress(Sender: TObject; var Key: Char);
+    procedure EditEstadoKeyPress(Sender: TObject; var Key: Char);
+    procedure SpeedButtonExcluirEndClick(Sender: TObject);
+    procedure DbGridEnderecosCellClick(Column: TColumn);
+
   private
-    { Private declarations }
     procedure LimpaCampos();
     procedure CarregarClientes;
+    procedure CarregarEnderecos;
     procedure InserirClientes;
     procedure AlterarClientes;
     procedure GravarDados;
+    procedure DefineBtnExcluiEnd;
     function ValidarDados: Boolean;
-//    procedure CarregarEnderecos;
+    function VerificaCampos: Boolean;
+
 
   public
     FOperacao : TOperacao;
     vlDouble : Double;
     codCliente : Integer;
-    { Public declarations }
+
   end;
 
 var
@@ -76,13 +117,24 @@ uses untDataModuleCadastros, untClienteController, untFormat, Cliente.Model, Cli
   System.StrUtils, untEnderecoController, Biblioteca, untMsgAguarde;
 
 
-procedure TFormManutencaoClientes.FormShow(Sender: TObject);
+procedure TFormManutencaoClientes.FormCreate(Sender: TObject);
 begin
   inherited;
   vlDouble := 0;
+  codCliente := 0;
+  CdsEnderecos.Close;
+  QryEnderecos.SQL.Add('and idpessoa = :idpessoa');
+  QryEnderecos.ParamByName('idpessoa').AsInteger := 0;
+  CdsEnderecos.CreateDataSet;
+end;
+
+procedure TFormManutencaoClientes.FormShow(Sender: TObject);
+begin
+  inherited;
   if FOperacao = opAlterar then
   begin
      CarregarClientes();
+     CarregarEnderecos();
      ComboBoxTipoPessoa.SetFocus;
   end
   else
@@ -91,13 +143,67 @@ begin
      LimpaCampos();
      ComboBoxTipoPessoa.SetFocus;
   end;
+end;
 
+procedure TFormManutencaoClientes.SpeedButtonIncluirEndClick(Sender: TObject);
+begin
+  inherited;
+  CdsEnderecos.Insert;
+  CdsEnderecos.FieldByName('DSCEP').AsString := EditCep.Text;
+  CdsEnderecos.FieldByName('NMLOGRADOURO').AsString := EditEndereco.Text;
+  CdsEnderecos.FieldByName('DSCOMPLEMENTO').AsString := EditComplemento.Text;
+  CdsEnderecos.FieldByName('NMBAIRRO').AsString := EditBairro.Text;
+  CdsEnderecos.FieldByName('NMCIDADE').AsString := EditCidade.Text;
+  CdsEnderecos.FieldByName('DSUF').AsString := EditEstado.Text;
+  CdsEnderecos.Post;
+  CdsEnderecos.ApplyUpdates(0);
+
+  EditCep.Text := EmptyStr;
+  EditEndereco.Text := EmptyStr;
+  EditComplemento.Text := EmptyStr;
+  EditBairro.Text := EmptyStr;
+  EditCidade.Text := EmptyStr;
+  EditEstado.Text := EmptyStr;
+
+  ComboBoxTipoPessoa.Enabled := False;
+  EditNome.Enabled := False;
+  EditSobrenome.Enabled := False;
+  EditDocumento.Enabled := False;
+  EditDataRegistro.Enabled := False;
+  DefineBtnExcluiEnd();
+  EditCep.SetFocus;
 end;
 
 procedure TFormManutencaoClientes.SpeedButtonCancelarClick(Sender: TObject);
 begin
   inherited;
-  CarregarClientes();
+  LimpaCampos();
+  ComboBoxTipoPessoa.ItemIndex := 0;
+  EditNome.Enabled := True;
+  EditSobrenome.Enabled := True;
+  EditDocumento.Enabled := True;
+  EditDataRegistro.Enabled := True;
+  SpeedButtonIncluirEnd.Enabled := False;
+  SpeedButtonExcluirEnd.Enabled := False;
+  ComboBoxTipoPessoa.Enabled := True;
+  ComboBoxTipoPessoa.SetFocus;
+  if CdsEnderecos.Active then
+  begin
+    CdsEnderecos.EmptyDataSet;
+    CdsEnderecos.Close;
+    CdsEnderecos.Open;
+  end;
+end;
+
+procedure TFormManutencaoClientes.SpeedButtonExcluirEndClick(Sender: TObject);
+begin
+  inherited;
+  if CdsEnderecos.Active and not CdsEnderecos.IsEmpty then
+  begin
+    // Remove o registro atualmente selecionado
+    CdsEnderecos.Delete;
+    DefineBtnExcluiEnd();
+  end;
 end;
 
 procedure TFormManutencaoClientes.SpeedButtonGravarClick(Sender: TObject);
@@ -191,7 +297,21 @@ begin
     FreeAndNil(Endereco);
     FreeAndNil(EnderecoIntegracao);
   end;
+end;
 
+procedure TFormManutencaoClientes.CarregarEnderecos;
+begin
+  CdsEnderecos.Close;
+  QryEnderecos.SQL.Add('and idpessoa = :idpessoa');
+  QryEnderecos.ParamByName('idpessoa').AsInteger := StrToInt(EditId.Text);
+  QryEnderecos.Open();
+  CdsEnderecos.CreateDataSet;
+  if CdsEnderecos.Active then
+  begin
+    CdsEnderecos.EmptyDataSet;
+    CdsEnderecos.Close;
+    CdsEnderecos.Open;
+  end;
 end;
 
 procedure TFormManutencaoClientes.ComboBoxTipoPessoaChange(Sender: TObject);
@@ -203,11 +323,45 @@ begin
      LabelDocumento.Caption := '          CNPJ:'
 end;
 
+procedure TFormManutencaoClientes.EditBairroExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
+procedure TFormManutencaoClientes.EditCepExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
+procedure TFormManutencaoClientes.EditCepKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  inherited;
+  if not (Key in ['0'..'9', #8]) then
+  begin
+    Key := #0;
+  end;
+end;
+
+procedure TFormManutencaoClientes.EditCidadeExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
+procedure TFormManutencaoClientes.EditComplementoExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
 procedure TFormManutencaoClientes.EditDataRegistroKeyPress(Sender: TObject;
   var Key: Char);
 begin
   inherited;
-  Formatar(EditDataRegistro, TFormato.Dt, '');
+  Formatar(EditDataRegistro, TFormato.Dt, '')
 end;
 
 procedure TFormManutencaoClientes.EditDocumentoChange(Sender: TObject);
@@ -217,6 +371,25 @@ begin
      Formatar(EditDocumento, TFormato.CPF, '')
   else
     Formatar(EditDocumento, TFormato.CNPJ, '')
+end;
+
+procedure TFormManutencaoClientes.EditEnderecoExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
+procedure TFormManutencaoClientes.EditEstadoExit(Sender: TObject);
+begin
+  inherited;
+  VerificaCampos();
+end;
+
+procedure TFormManutencaoClientes.EditEstadoKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  inherited;
+  VerificaCampos();
 end;
 
 procedure TFormManutencaoClientes.LimpaCampos;
@@ -234,18 +407,7 @@ begin
     (FormManutencaoClientes.Components[i] as TLabeledEdit).Text:='';
 
   end;
-  {EditId.Text := EmptyStr;
-  ComboBoxTipoPessoa.ItemIndex := 0;
-  EditNome.Text := EmptyStr;
-  EditSobrenome.Text := EmptyStr;
-  EditDocumento.Text := EmptyStr;
-  EditDataRegistro.Text := EmptyStr;
-  EditCep.Text := EmptyStr;
-  EditEndereco.Text := EmptyStr;
-  EditComplemento.Text := EmptyStr;
-  EditBairro.Text := EmptyStr;
-  EditCidade.Text := EmptyStr;
-  EditEstado.Text := EmptyStr;}
+  LabelDocumento.Caption := 'Documento:'
 end;
 
 procedure TFormManutencaoClientes.GravarDados;
@@ -297,7 +459,7 @@ begin
         DsComplemento := EditComplemento.Text;
       end;
 
-      if ClienteController.InserirClientes(Cliente, Endereco, EnderecoIntegracao, sErro) = false then
+      if ClienteController.InserirClientes(Cliente, Endereco, CdsEnderecos , sErro) = false then
         raise Exception.Create(sErro)
       else
         MessageDlg('Registro incluido com sucesso !!', mtInformation, [mbOk], 0);
@@ -351,9 +513,10 @@ end;
 function TFormManutencaoClientes.ValidarDados: Boolean;
 begin
   Result := False;
-  if ComboBoxTipoPessoa.ItemIndex = 0 then
+  if ComboBoxTipoPessoa.ItemIndex <= 0 then
   begin
     MessageDlg('Tipo de pessoa deve ser informado!', mtInformation, [mbOK], 0);
+    ComboBoxTipoPessoa.Enabled := True;
     ComboBoxTipoPessoa.SetFocus;
     Exit;
   end;
@@ -386,6 +549,18 @@ begin
     Exit;
   end;
 
+  if CdsEnderecos.RecordCount <= 0 then
+  begin
+    MessageDlg('Não existe endereço adicionado para o cliente !', mtInformation, [mbOK], 0);
+    EditCep.SetFocus;
+    Exit;
+  end
+  else
+  begin
+    Result := True;
+    Exit;
+  end;
+
   if EditCep.Text = EmptyStr then
   begin
     MessageDlg('O CEP do cliente deve ser informado!', mtInformation, [mbOK], 0);
@@ -409,7 +584,7 @@ begin
 
   if EditBairro.Text = EmptyStr then
   begin
-    MessageDlg('O complemento do endereço deve ser informado!', mtInformation, [mbOK], 0);
+    MessageDlg('O bairro do endereço deve ser informado!', mtInformation, [mbOK], 0);
     EditBairro.SetFocus;
     Exit;
   end;
@@ -429,6 +604,41 @@ begin
   end;
 
   Result := True;
+end;
+
+function TFormManutencaoClientes.VerificaCampos: Boolean;
+var i: Integer;
+begin
+  Result := False;
+  if EditCep.Text = '' then Exit;
+  if EditEndereco.Text = '' then Exit;
+  if EditComplemento.Text = '' then Exit;
+  if EditBairro.Text = '' then Exit;
+  if EditCidade.Text = '' then Exit;
+  if EditEstado.Text = '' then Exit;
+
+  SpeedButtonIncluirEnd.Enabled := True;
+  DefineBtnExcluiEnd();
+  Result := True;
+end;
+
+procedure TFormManutencaoClientes.DbGridEnderecosCellClick(Column: TColumn);
+begin
+  inherited;
+  EditCep.Text := CdsEnderecos.FieldByName('DSCEP').AsString;
+  EditEndereco.Text := CdsEnderecos.FieldByName('NMLOGRADOURO').AsString;
+  EditComplemento.Text := CdsEnderecos.FieldByName('DSCOMPLEMENTO').AsString;
+  EditBairro.Text := CdsEnderecos.FieldByName('NMBAIRRO').AsString;
+  EditCidade.Text := CdsEnderecos.FieldByName('NMCIDADE').AsString;
+  EditEstado.Text := CdsEnderecos.FieldByName('DSUF').AsString;
+end;
+
+procedure TFormManutencaoClientes.DefineBtnExcluiEnd;
+begin
+  if CdsEnderecos.RecordCount > 0 then
+    SpeedButtonExcluirEnd.Enabled := True
+  else
+    SpeedButtonExcluirEnd.Enabled := False;
 end;
 
 end.

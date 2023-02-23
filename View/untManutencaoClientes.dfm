@@ -2,24 +2,25 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Cadastro de Clientes'
-  ClientHeight = 406
+  ClientHeight = 441
   ClientWidth = 781
   Position = poOwnerFormCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   ExplicitWidth = 787
-  ExplicitHeight = 435
+  ExplicitHeight = 470
   PixelsPerInch = 96
   TextHeight = 13
   inherited PanelBotoes: TPanel
     Left = 644
-    Height = 406
-    ExplicitLeft = 634
-    ExplicitHeight = 396
+    Height = 441
+    ExplicitLeft = 644
+    ExplicitHeight = 406
     inherited SpeedButtonGravar: TSpeedButton
       OnClick = SpeedButtonGravarClick
     end
     inherited SpeedButtonFechar: TSpeedButton
-      Top = 356
+      Top = 391
       ExplicitTop = 311
     end
     inherited SpeedButtonCancelar: TSpeedButton
@@ -28,14 +29,14 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
   end
   inherited PanelDados: TPanel
     Width = 644
-    Height = 406
-    ExplicitWidth = 634
-    ExplicitHeight = 396
+    Height = 441
+    ExplicitWidth = 644
+    ExplicitHeight = 406
     object GroupBoxClientes: TGroupBox
       Left = 7
       Top = 3
       Width = 617
-      Height = 385
+      Height = 430
       Caption = ' Dados do Cliente '
       TabOrder = 0
       object Label1: TLabel
@@ -92,6 +93,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
+        MaxLength = 100
         ParentFont = False
         TabOrder = 2
       end
@@ -121,6 +123,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
+        MaxLength = 100
         ParentFont = False
         TabOrder = 3
       end
@@ -169,6 +172,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         Font.Height = -9
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
+        MaxLength = 10
         ParentFont = False
         TabOrder = 5
         OnKeyPress = EditDataRegistroKeyPress
@@ -177,12 +181,12 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         Left = 10
         Top = 107
         Width = 597
-        Height = 272
+        Height = 310
         Caption = ' Endere'#231'os '
         TabOrder = 6
         DesignSize = (
           597
-          272)
+          310)
         object Label2: TLabel
           Left = 53
           Top = 21
@@ -190,14 +194,15 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Height = 13
           Caption = 'CEP:'
         end
-        object SpeedButtonAdiciona: TSpeedButton
-          Left = 480
-          Top = 16
-          Width = 99
-          Height = 27
+        object SpeedButtonIncluirEnd: TSpeedButton
+          Left = 131
+          Top = 136
+          Width = 130
+          Height = 25
           Anchors = [akLeft, akTop, akRight]
           BiDiMode = bdRightToLeftNoAlign
-          Caption = ' &Adiciona'
+          Caption = ' &Incluir Endere'#231'o'
+          Enabled = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -232,8 +237,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
             9060BF8E5FBD8C5EC2976FCEAD93F8F4F1FFFFFFFFFFFFFFFFFF}
           ParentFont = False
           ParentBiDiMode = False
-          OnClick = SpeedButtonGravarClick
-          ExplicitWidth = 107
+          OnClick = SpeedButtonIncluirEndClick
         end
         object SpeedButtonPesquisaCep: TSpeedButton
           Left = 192
@@ -283,7 +287,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         end
         object Bevel1: TBevel
           Left = 8
-          Top = 134
+          Top = 172
           Width = 582
           Height = 2
         end
@@ -322,6 +326,51 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Height = 13
           Caption = 'Estado:'
         end
+        object SpeedButtonExcluirEnd: TSpeedButton
+          Left = 334
+          Top = 136
+          Width = 130
+          Height = 25
+          Anchors = [akLeft, akTop, akRight]
+          BiDiMode = bdRightToLeftNoAlign
+          Caption = ' &Excluir Endere'#231'o'
+          Enabled = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Glyph.Data = {
+            36030000424D3603000000000000360000002800000010000000100000000100
+            18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
+            FFFFFFF2E6DAD1AC87D1AC87E8D5C2FFFFFFA0B0E49EAEE3FFFFFFE8D6C38F9D
+            D4ACB9E7FFFFFFFFFFFFFFFFFFFFFFFFF7F0E9D1AA85FFFBEFFFF1DFFEFBF89E
+            ADE31039BB1039BBCDD5F1C5CEEE1039BB1339BBACB9E7FFFFFFFFFFFFFFFFFF
+            D1AC87FFFBF1F8CEA0F7D2A8FFFFFF7B90D91039BB1039BB1039BB1039BB1039
+            BB1039BB7B90D9FFFFFFFFFFFFFFFFFFD1AC87FFF6E8F6C48DF6C38DF8E6D3FF
+            FFFF879BDC1239BB1039BB1039BB143ABBBFCAECFFFFFFFFFFFFFFFFFFFFFFFF
+            D1AC87FFF6E8F6C58EF6C48FF7E1C9FFFFFF9DADE31339BB1039BB1039BB153B
+            BBCCD4F0FFFFFFFFFFFFFFFFFFFFFFFFD1AC87FFF5E8F6C58EF6C48FFFFDFC8E
+            A0DE1039BB1039BB1039BB1039BB1039BB1039BB9CACE3FFFFFFFFFFFFFFFFFF
+            D1AC87FFF5E8F6C58EF6C48FFFFFFF899CDD1039BB1039BB92A4E08599DC1039
+            BB1039BB98A9E2FFFFFFFFFFFFFFFFFFD1AC87FFF6E8F6C58EF6C48FF7E2CBFF
+            FFFF879BDC8599DCFFFFFFFFFFFF7A90D994A6E0FFFFFFFFFFFFFFFFFFFFFFFF
+            D1AC87FFF5E8F6C58EF6C490EDBB85F4DCC4FFFFFFFFFFFFF8E1CAD7BFA6FFFF
+            FFEFE1D4FFFFFFFFFFFFFFFFFFFFFFFFD1AC87FFF7EBF6C792F6C188EAB67DE0
+            A566E8B785B16E27E6AD748E4D05FDE2C5D1AC87FFFFFFFFFFFFFFFFFFFFFFFF
+            D1AC87FCD8AFF3AB5FEEA961E7A762DFA160D19452C58643B370289C570DCEA2
+            72D1AC87FFFFFFFFFFFFFFFFFFFFFFFFC69F7AFFE6C7FCEAD5FEF3E4FEF5EAFD
+            F3E6FBF0E4FCEFE1F8E8D5EED5BBE0C3A2C59B74FFFFFFFFFFFFFFFFFFFFFFFF
+            CBA47EFFF9EDFFEDDAFBE5CDF3D8BAE9C8A3DEB78DD8AE81D5AB7EDAB58BEFDB
+            C1CCA57DFFFFFFFFFFFFFFFFFFFFFFFFC69F77FFEFDEFFF4E3FFECD4F7DFC2EE
+            CFADE3C097DDB58CD8AF84DAB58DE7CBACC49A71FFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFD8BB9FCDA883CDA681CDA67DCCA47BCAA176C99F75C89E77C9A17CD4B4
+            95FEFDFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
+          ParentFont = False
+          ParentBiDiMode = False
+          OnClick = SpeedButtonExcluirEndClick
+        end
         object EditCep: TEdit
           Left = 81
           Top = 20
@@ -333,9 +382,11 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 8
           ParentFont = False
           TabOrder = 0
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditCepExit
+          OnKeyPress = EditCepKeyPress
         end
         object EditEndereco: TEdit
           Left = 81
@@ -348,12 +399,13 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 100
           ParentFont = False
           TabOrder = 1
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditEnderecoExit
         end
         object EditComplemento: TEdit
-          Left = 81
+          Left = 82
           Top = 72
           Width = 197
           Height = 19
@@ -363,9 +415,10 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 100
           ParentFont = False
           TabOrder = 2
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditComplementoExit
         end
         object EditBairro: TEdit
           Left = 390
@@ -378,9 +431,10 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 50
           ParentFont = False
           TabOrder = 3
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditBairroExit
         end
         object EditCidade: TEdit
           Left = 81
@@ -393,9 +447,10 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 100
           ParentFont = False
           TabOrder = 4
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditCidadeExit
         end
         object EditEstado: TEdit
           Left = 390
@@ -408,28 +463,195 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           Font.Height = -9
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
+          MaxLength = 50
           ParentFont = False
           TabOrder = 5
-          OnKeyPress = EditDataRegistroKeyPress
+          OnExit = EditEstadoExit
+          OnKeyPress = EditEstadoKeyPress
         end
       end
     end
   end
-  object DBGrid1: TDBGrid [2]
+  object DbGridEnderecos: TDBGrid [2]
     Left = 25
-    Top = 254
+    Top = 292
     Width = 582
     Height = 119
+    DataSource = DataSourceEnderecos
     TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnCellClick = DbGridEnderecosCellClick
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'dscep'
+        Title.Caption = 'CEP'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'nmlogradouro'
+        Title.Caption = 'Logradouro'
+        Width = 270
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'dscomplemento'
+        Title.Caption = 'Complemento'
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'nmbairro'
+        Title.Caption = 'Bairro'
+        Width = 180
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'nmcidade'
+        Title.Caption = 'Cidade'
+        Width = 250
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'dsuf'
+        Title.Caption = 'Estado'
+        Width = 200
+        Visible = True
+      end>
   end
   inherited DataSourcePadrao: TDataSource
     DataSet = DataModuleCadastros.TbClientes
-    Left = 608
-    Top = 192
+    Left = 696
+    Top = 112
+  end
+  object QryEnderecos: TFDQuery
+    AutoCalcFields = False
+    IndexesActive = False
+    Connection = DataModuleConexao.FDConnection
+    SQL.Strings = (
+      'select '
+      '   edr.idendereco'
+      '  ,CAST(edr.idpessoa AS INT)'
+      '  ,eit.nmlogradouro'
+      '  ,eit.dscomplemento'
+      '  ,eit.nmbairro'
+      '  ,edr.dscep'
+      '  ,eit.nmcidade'
+      '  ,eit.dsuf'
+      'from endereco edr'
+      
+        '   inner join endereco_integracao eit on edr.idendereco = eit.id' +
+        'endereco'
+      'where 1 = 1'
+      ''
+      ''
+      '')
+    Left = 732
+    Top = 168
+    object QryEnderecosidendereco: TLargeintField
+      FieldName = 'idendereco'
+      Origin = 'idendereco'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object QryEnderecosnmlogradouro: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'nmlogradouro'
+      Origin = 'nmlogradouro'
+      Size = 100
+    end
+    object QryEnderecosdscomplemento: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'dscomplemento'
+      Origin = 'dscomplemento'
+      Size = 100
+    end
+    object QryEnderecosnmbairro: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'nmbairro'
+      Origin = 'nmbairro'
+      Size = 50
+    end
+    object QryEnderecosdscep: TWideStringField
+      FieldName = 'dscep'
+      Origin = 'dscep'
+      Size = 15
+    end
+    object QryEnderecosnmcidade: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'nmcidade'
+      Origin = 'nmcidade'
+      Size = 100
+    end
+    object QryEnderecosdsuf: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'dsuf'
+      Origin = 'dsuf'
+      Size = 50
+    end
+    object QryEnderecosidpessoa: TIntegerField
+      FieldName = 'idpessoa'
+    end
+  end
+  object CdsEnderecos: TClientDataSet
+    Active = True
+    Aggregates = <>
+    AutoCalcFields = False
+    Params = <>
+    ProviderName = 'DSProvider'
+    Left = 668
+    Top = 224
+    object CdsEnderecosnmlogradouro: TWideStringField
+      FieldName = 'nmlogradouro'
+      Origin = 'nmlogradouro'
+      Size = 100
+    end
+    object CdsEnderecosdscomplemento: TWideStringField
+      FieldName = 'dscomplemento'
+      Origin = 'dscomplemento'
+      Size = 100
+    end
+    object CdsEnderecosnmbairro: TWideStringField
+      FieldName = 'nmbairro'
+      Origin = 'nmbairro'
+      Size = 50
+    end
+    object CdsEnderecosdscep: TWideStringField
+      FieldName = 'dscep'
+      Origin = 'dscep'
+      Size = 15
+    end
+    object CdsEnderecosnmcidade: TWideStringField
+      FieldName = 'nmcidade'
+      Origin = 'nmcidade'
+      Size = 100
+    end
+    object CdsEnderecosdsuf: TWideStringField
+      FieldName = 'dsuf'
+      Origin = 'dsuf'
+      Size = 50
+    end
+    object CdsEnderecosidpessoa: TIntegerField
+      FieldName = 'idpessoa'
+    end
+  end
+  object DataSourceEnderecos: TDataSource
+    AutoEdit = False
+    DataSet = CdsEnderecos
+    Left = 736
+    Top = 224
+  end
+  object DSProvider: TDataSetProvider
+    DataSet = QryEnderecos
+    Left = 668
+    Top = 168
   end
 end
