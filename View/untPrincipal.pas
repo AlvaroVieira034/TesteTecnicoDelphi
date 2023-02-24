@@ -31,7 +31,6 @@ type
     PanelPesquisarCliente: TPanel;
     SpeedButtonAlterarCliente: TSpeedButton;
     SpeedButtonExcluirCliente: TSpeedButton;
-    SpeedButtonImportarLista: TSpeedButton;
     SpeedButtonSairClientes: TSpeedButton;
     SpeedButtonFiltrarClientes: TSpeedButton;
     SpeedButtonFiltrarTodosClientes: TSpeedButton;
@@ -111,7 +110,7 @@ implementation
 {$R *.dfm}
 
 uses Biblioteca, untEnviarEmail, untClienteController, untEnderecoController, Cliente.Model,  Cliente.Endereco.Model,
-  untDataModuleCadastros, untManutencaoClientes, untManutencaoEnderecos;
+  untDataModuleCadastros, untManutencaoClientes, untManutencaoEnderecos, untImportaArquivo;
 
 
 procedure TFormPrincipal.FormCreate(Sender: TObject);
@@ -141,14 +140,12 @@ begin
     SpeedButtonNovoCliente.Enabled := False;
     SpeedButtonAlterarCliente.Enabled := False;
     SpeedButtonExcluirCliente.Enabled := False;
-    SpeedButtonImportarLista.Enabled := False;
     SpeedButtonSair.Enabled := False;
   end else
   begin
     SpeedButtonNovoCliente.Enabled := True;
     SpeedButtonAlterarCliente.Enabled := True;
     SpeedButtonExcluirCliente.Enabled := True;
-    SpeedButtonImportarLista.Enabled := True;
     SpeedButtonSair.Enabled := True;
   end;
 end;
@@ -334,7 +331,11 @@ end;
 
 procedure TFormPrincipal.SpeedButtonRelatoriosClick(Sender: TObject);
 begin
-   //frxReport.ShowReport();
+  if not Assigned(FormImportaArquivo) then
+    FormImportaArquivo := TFormImportaArquivo.Create(Self);
+
+  FormImportaArquivo.ShowModal;
+  FreeAndNil(FormImportaArquivo);
 end;
 
 procedure TFormPrincipal.EditPesquisarClienteChange(Sender: TObject);

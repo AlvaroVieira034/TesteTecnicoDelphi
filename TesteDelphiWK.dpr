@@ -16,7 +16,8 @@ uses
   untManutencaoEnderecos in 'View\untManutencaoEnderecos.pas' {FormManutencaoEnderecos},
   untMsgAguarde in 'View\untMsgAguarde.pas' {FormMsgAguarde},
   untEnviarEmail in 'View\untEnviarEmail.pas' {FormEnviarEmail},
-  Cliente.EnderecoIntegracao.Model in 'Model\Cliente.EnderecoIntegracao.Model.pas';
+  Cliente.EnderecoIntegracao.Model in 'Model\Cliente.EnderecoIntegracao.Model.pas',
+  untImportaArquivo in 'View\untImportaArquivo.pas' {FormImportaArquivo};
 
 {$R *.res}
 
