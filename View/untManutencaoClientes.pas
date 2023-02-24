@@ -49,7 +49,6 @@ type
     QryEnderecos: TFDQuery;
     CdsEnderecos: TClientDataSet;
     DataSourceEnderecos: TDataSource;
-    QryEnderecosidendereco: TLargeintField;
     QryEnderecosnmlogradouro: TWideStringField;
     QryEnderecosdscomplemento: TWideStringField;
     QryEnderecosnmbairro: TWideStringField;
@@ -66,7 +65,12 @@ type
     CdsEnderecosidpessoa: TIntegerField;
     DSProvider: TDataSetProvider;
     SpeedButtonExcluirEnd: TSpeedButton;
+    QryEnderecosidendereco: TIntegerField;
+    CdsEnderecosidendereco: TIntegerField;
+    EditIdEndereco: TEdit;
+    EditIdCliente: TEdit;
 {$ENDREGION}
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButtonGravarClick(Sender: TObject);
     procedure EditDataRegistroKeyPress(Sender: TObject; var Key: Char);
@@ -75,7 +79,6 @@ type
     procedure ComboBoxTipoPessoaChange(Sender: TObject);
     procedure SpeedButtonCancelarClick(Sender: TObject);
     procedure SpeedButtonIncluirEndClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure EditCepExit(Sender: TObject);
     procedure EditEnderecoExit(Sender: TObject);
     procedure EditComplementoExit(Sender: TObject);
@@ -113,8 +116,8 @@ implementation
 
 {$R *.dfm}
 
-uses untDataModuleCadastros, untClienteController, untFormat, Cliente.Model, Cliente.Endereco.Model, Cliente.EnderecoIntegracao.Model,
-  System.StrUtils, untEnderecoController, Biblioteca, untMsgAguarde;
+uses untDataModuleCadastros, untClienteController, untFormat, Cliente.Model, Cliente.Endereco.Model,
+     Cliente.EnderecoIntegracao.Model, System.StrUtils, untEnderecoController, Biblioteca, untMsgAguarde;
 
 
 procedure TFormManutencaoClientes.FormCreate(Sender: TObject);
@@ -155,8 +158,9 @@ begin
   CdsEnderecos.FieldByName('NMBAIRRO').AsString := EditBairro.Text;
   CdsEnderecos.FieldByName('NMCIDADE').AsString := EditCidade.Text;
   CdsEnderecos.FieldByName('DSUF').AsString := EditEstado.Text;
+  CdsEnderecos.FieldByName('IDPESSOA').AsInteger := 0;
+  CdsEnderecos.FieldByName('IDENDERECO').AsInteger := 0;
   CdsEnderecos.Post;
-  CdsEnderecos.ApplyUpdates(0);
 
   EditCep.Text := EmptyStr;
   EditEndereco.Text := EmptyStr;
@@ -305,6 +309,8 @@ begin
   QryEnderecos.SQL.Add('and idpessoa = :idpessoa');
   QryEnderecos.ParamByName('idpessoa').AsInteger := StrToInt(EditId.Text);
   QryEnderecos.Open();
+  EditIdEndereco.Text := IntToStr(QryEnderecos.FieldByName('IDENDERECO').AsInteger);
+  EditIdCliente.Text := IntToStr(QryEnderecos.FieldByName('IDPESSOA').AsInteger);
   CdsEnderecos.CreateDataSet;
   if CdsEnderecos.Active then
   begin
@@ -459,7 +465,7 @@ begin
         DsComplemento := EditComplemento.Text;
       end;
 
-      if ClienteController.InserirClientes(Cliente, Endereco, CdsEnderecos , sErro) = false then
+      if ClienteController.InserirClientes(Cliente, Endereco, CdsEnderecos, sErro) = false then
         raise Exception.Create(sErro)
       else
         MessageDlg('Registro incluido com sucesso !!', mtInformation, [mbOk], 0);
@@ -479,16 +485,21 @@ procedure TFormManutencaoClientes.AlterarClientes;
 var
   Cliente : TCliente;
   ClienteController : TClienteController;
-  sErro : String;
-  VlrDouble : Double;
+  Endereco : TClienteEndereco;
+  EnderecoIntegracao : TClienteEnderecoIntegracao;
+  sErro: String;
+  VlrDouble: Double;
 begin
   Cliente := TCliente.Create;
   ClienteController := TClienteController.Create;
+  Endereco := TClienteEndereco.Create;
+  EnderecoIntegracao := TClienteEnderecoIntegracao.Create;
   try
     with Cliente do
     begin
       IdPessoa := StrToInt(EditId.Text);
       NmPrimeiro := EditNome.Text;
+      NmSegundo := EditSobrenome.Text;
       FlNatureza := ComboBoxTipoPessoa.ItemIndex;
       DsDocumento := EditDocumento.Text;
       if EditDataRegistro.Text <> '' then
@@ -498,15 +509,34 @@ begin
 
     end;
 
-    if ClienteController.AlterarClientes(Cliente, sErro) = False then
+    with Endereco do
+    begin
+      IdEndereco := StrToInt(EditIdEndereco.Text);
+      IdPessoa := StrToInt(EditIdCliente.Text);
+      DsCep := EditCep.Text;
+    end;
+
+    with EnderecoIntegracao do
+    begin
+      IdEndereco := StrToInt(EditIdEndereco.Text);
+      DsUf := EditEstado.Text;
+      NmCidade := EditCidade.Text;
+      NmBairro := EditBairro.Text;
+      NmLogradouro := EditEndereco.Text;
+      DsComplemento := EditComplemento.Text;
+    end;
+
+    if ClienteController.AlterarClientes(Cliente, Endereco, EnderecoIntegracao, StrToInt(EditId.Text), sErro) = False then
       raise Exception.Create(sErro)
     else
       MessageDlg('Registro alterado com sucesso !!', mtInformation, [mbOK], 0);
 
-    SpeedButtonFechar.Click
+    SpeedButtonFechar.Click;
   finally
     FreeAndNil(Cliente);
     FreeAndNil(ClienteController);
+    FreeAndNil(Endereco);
+    FreeAndNil(EnderecoIntegracao);
   end;
 end;
 
@@ -610,15 +640,18 @@ function TFormManutencaoClientes.VerificaCampos: Boolean;
 var i: Integer;
 begin
   Result := False;
-  if EditCep.Text = '' then Exit;
-  if EditEndereco.Text = '' then Exit;
-  if EditComplemento.Text = '' then Exit;
-  if EditBairro.Text = '' then Exit;
-  if EditCidade.Text = '' then Exit;
-  if EditEstado.Text = '' then Exit;
+  if FOperacao = opNovo then
+  begin
+    if EditCep.Text = '' then Exit;
+    if EditEndereco.Text = '' then Exit;
+    if EditComplemento.Text = '' then Exit;
+    if EditBairro.Text = '' then Exit;
+    if EditCidade.Text = '' then Exit;
+    if EditEstado.Text = '' then Exit;
 
-  SpeedButtonIncluirEnd.Enabled := True;
-  DefineBtnExcluiEnd();
+    SpeedButtonIncluirEnd.Enabled := True;
+    DefineBtnExcluiEnd();
+  end;
   Result := True;
 end;
 

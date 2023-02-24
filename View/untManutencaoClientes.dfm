@@ -15,7 +15,8 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     Left = 644
     Height = 441
     ExplicitLeft = 644
-    ExplicitHeight = 406
+    ExplicitTop = -5
+    ExplicitHeight = 441
     inherited SpeedButtonGravar: TSpeedButton
       OnClick = SpeedButtonGravarClick
     end
@@ -31,7 +32,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     Width = 644
     Height = 441
     ExplicitWidth = 644
-    ExplicitHeight = 406
+    ExplicitHeight = 441
     object GroupBoxClientes: TGroupBox
       Left = 7
       Top = 3
@@ -470,6 +471,22 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
           OnKeyPress = EditEstadoKeyPress
         end
       end
+      object EditIdEndereco: TEdit
+        Left = 50
+        Top = 312
+        Width = 31
+        Height = 21
+        TabOrder = 7
+        Visible = False
+      end
+      object EditIdCliente: TEdit
+        Left = 50
+        Top = 304
+        Width = 31
+        Height = 21
+        TabOrder = 8
+        Visible = False
+      end
     end
   end
   object DbGridEnderecos: TDBGrid [2]
@@ -478,6 +495,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     Width = 582
     Height = 119
     DataSource = DataSourceEnderecos
+    Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -490,6 +508,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
         Expanded = False
         FieldName = 'dscep'
         Title.Caption = 'CEP'
+        Width = 64
         Visible = True
       end
       item
@@ -539,7 +558,7 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     Connection = DataModuleConexao.FDConnection
     SQL.Strings = (
       'select '
-      '   edr.idendereco'
+      '   CAST(edr.idendereco AS INT)'
       '  ,CAST(edr.idpessoa AS INT)'
       '  ,eit.nmlogradouro'
       '  ,eit.dscomplemento'
@@ -557,11 +576,6 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
       '')
     Left = 732
     Top = 168
-    object QryEnderecosidendereco: TLargeintField
-      FieldName = 'idendereco'
-      Origin = 'idendereco'
-      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
-    end
     object QryEnderecosnmlogradouro: TWideStringField
       AutoGenerateValue = arDefault
       FieldName = 'nmlogradouro'
@@ -600,9 +614,11 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     object QryEnderecosidpessoa: TIntegerField
       FieldName = 'idpessoa'
     end
+    object QryEnderecosidendereco: TIntegerField
+      FieldName = 'idendereco'
+    end
   end
   object CdsEnderecos: TClientDataSet
-    Active = True
     Aggregates = <>
     AutoCalcFields = False
     Params = <>
@@ -641,6 +657,9 @@ inherited FormManutencaoClientes: TFormManutencaoClientes
     end
     object CdsEnderecosidpessoa: TIntegerField
       FieldName = 'idpessoa'
+    end
+    object CdsEnderecosidendereco: TIntegerField
+      FieldName = 'idendereco'
     end
   end
   object DataSourceEnderecos: TDataSource

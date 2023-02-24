@@ -56,7 +56,7 @@ type
     procedure CarregarEnderecoClientes(Endereco : TClienteEndereco; iCodEnd : Integer);
     procedure CarregarEnderecoIntegracao(EnderecoIntegracao : TClienteEnderecoIntegracao; iCodEnd : Integer);
     function InserirClientes(Cliente : TCliente; Endereco : TClienteEndereco; CdsEnderecos: TClientDataSet; out sErro : String): Boolean;
-    function AlterarClientes(Cliente : TCliente; out sErro : String): Boolean;
+    function AlterarClientes(Cliente : TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodCli: Integer; out sErro : String): Boolean;
     function ExcluirClientes(iCodigo : Integer; out sErro : String): Boolean;
     function InserirEnderecos(Endereco : TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodEnd : Integer; out sErro : String): Boolean;
     function AlterarEnderecos(Endereco : TClienteEndereco; iCodEnd : Integer; out sErro : String): Boolean;
@@ -395,7 +395,8 @@ begin
   QryInt.Free;
 end;
 
-function TDataModuleCadastros.AlterarClientes(Cliente: TCliente;  out sErro: String): Boolean;
+function TDataModuleCadastros.AlterarClientes(Cliente: TCliente;  Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodCli: Integer; out sErro: String): Boolean;
+var iCodEnd: Integer;
 begin
   with sqlAlterar, Cliente do
   begin
@@ -405,7 +406,7 @@ begin
                 'DsDocumento = :DsDocumento, ' +
                 'NmPrimeiro = :NmPrimeiro, ' +
                 'NmSegundo = :NmSegundo, ' +
-                'DtRegistro = :DtRegistro, ' +
+                'DtRegistro = :DtRegistro ' +
                 'where IdPessoa = :Id' ;
     ParamByName('FlNatureza').AsInteger := FlNatureza;
     ParamByName('DsDocumento').AsString := DsDocumento;
@@ -428,8 +429,11 @@ begin
         raise;
       end;
     end;
+
+    iCodEnd := Endereco.IdEndereco;
+    AlterarEnderecos(Endereco, iCodEnd, sErro);
+    AlterarEnderecoIntegracao(EnderecoIntegracao, iCodEnd, sErro);
     DataModuleConexao.FDConnection.Commit;
-    Result := True;
   end;
 end;
 

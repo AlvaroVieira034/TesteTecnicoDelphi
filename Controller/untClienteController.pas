@@ -2,7 +2,8 @@ unit untClienteController;
 
 interface
 
-uses Cliente.Model, Cliente.Endereco.Model, Cliente.EnderecoIntegracao.Model, untDataModuleCadastros, System.SysUtils, Datasnap.DBClient;
+uses Cliente.Model, Cliente.Endereco.Model, Cliente.EnderecoIntegracao.Model, untDataModuleCadastros,System.SysUtils,
+     Datasnap.DBClient;
 
 type
   TClienteController = class
@@ -13,7 +14,7 @@ type
     procedure PesquisarCliente(sNome, campoIndice : String);
     procedure CarregarCliente(Cliente : TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodigo : Integer);
     function InserirClientes(Cliente : TCliente; Endereco : TClienteEndereco; CdsEnderecos: TClientDataSet; var sErro : String): Boolean;
-    function AlterarClientes(Cliente : TCliente; var sErro : String): Boolean;
+    function AlterarClientes(Cliente : TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodCli: Integer; var sErro : String): Boolean;
     function ExcluirClientes(iCodigo : Integer; var sErro : String): Boolean;
 
   end;
@@ -37,9 +38,9 @@ begin
   Result := DataModuleCadastros.InserirClientes(Cliente, Endereco, CdsEnderecos, sErro);
 end;
 
-function TClienteController.AlterarClientes(Cliente: TCliente;  var sErro: String): Boolean;
+function TClienteController.AlterarClientes(Cliente: TCliente; Endereco: TClienteEndereco; EnderecoIntegracao: TClienteEnderecoIntegracao; iCodCli: Integer; var sErro: String): Boolean;
 begin
-  Result := DataModuleCadastros.AlterarClientes(Cliente, sErro);
+  Result := DataModuleCadastros.AlterarClientes(Cliente, Endereco, EnderecoIntegracao, iCodCli, sErro);
 end;
 
 function TClienteController.ExcluirClientes(iCodigo: Integer; var sErro: String): Boolean;
